@@ -5,6 +5,7 @@ require("dotenv").config();
 const cors = require("cors");
 const ObjectId = require("mongodb").ObjectId;
 
+
 const PORT = process.env.PORT || 5000;
 
 // MIDDLEWARE
@@ -26,6 +27,7 @@ const run = async () => {
     await client.connect();
     const database = client.db("PickyPro");
     const userCollections = database.collection("Users");
+    const serviceCollections = database.collection('Services')
 
     //   create new user
     app.post("/api/user/create", async (req, res) => {
@@ -34,11 +36,25 @@ const run = async () => {
       res.json(createdUser);
     });
 
-    app.get('/api/user',async(req,res)=>{
-        const user = userCollections.find({})
-        const users = await user.toArray()
-        res.json(users)
+    app.post('/api/service/create',async(req,res)=>{
+        const serviceData = req.body
+        const createdService = await  serviceCollections.insertOne(serviceData)
+        res.json(createdService)
     })
+
+    // create an user google user
+    app.put("/api/user/create", async (req, res) => {
+        const user = req.body;
+        const filter = { email: user.email };
+        const options = { upsert: true };
+        const updateDoc = { $set: user };
+        const result = await userCollections.updateOne(
+          filter,
+          updateDoc,
+          options
+        );
+        res.json(result);
+      });
   } finally {
     // await client.close()
   }
