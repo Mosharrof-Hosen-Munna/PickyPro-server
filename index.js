@@ -28,6 +28,7 @@ const run = async () => {
     const database = client.db("PickyPro");
     const userCollections = database.collection("Users");
     const serviceCollections = database.collection('Services')
+    const reviewCollections = database.collection('Reviews')
 
     //   create new user
     app.post("/api/user/create", async (req, res) => {
@@ -35,12 +36,6 @@ const run = async () => {
       const createdUser = await userCollections.insertOne(userData);
       res.json(createdUser);
     });
-
-    app.post('/api/service/create',async(req,res)=>{
-        const serviceData = req.body
-        const createdService = await  serviceCollections.insertOne(serviceData)
-        res.json(createdService)
-    })
 
     // create an user google user
     app.put("/api/user/create", async (req, res) => {
@@ -55,6 +50,45 @@ const run = async () => {
         );
         res.json(result);
       });
+
+    // service api
+    app.post('/api/service/create',async(req,res)=>{
+        const serviceData = req.body
+        const createdService = await  serviceCollections.insertOne(serviceData)
+        res.json(createdService)
+    })
+
+    app.get('/api/services',async(req,res)=>{
+        const cursor = serviceCollections.find({})
+        const services = await cursor.toArray()
+        res.json(services)
+    })
+    app.get('/api/services/limit',async(req,res)=>{
+        const cursor = serviceCollections.find({})
+        const services = await cursor.limit(3).toArray()
+        res.json(services)
+    })
+    // get single service
+    app.get('/api/service/:serviceId',async(req,res)=>{
+        const id = req.params.serviceId
+        const service =await serviceCollections.findOne({_id: ObjectId(id)})
+        res.json(service)
+    })
+
+    // review api
+
+    app.post('/api/review/create',async(req,res)=>{
+        const reviewData = req.body
+        const createdReview = await reviewCollections.insertOne(reviewData)
+        res.json(createdReview)
+    })
+
+    // get single service review
+    app.get('/api/reviews/:serviceId',(req,res)=>{
+        const cursor
+    })
+
+    
   } finally {
     // await client.close()
   }
