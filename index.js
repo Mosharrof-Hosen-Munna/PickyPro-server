@@ -108,10 +108,10 @@ const run = async () => {
       if (req.user?.uid !== uid) {
         return res.json({ message: "unauthorized" });
       }
-
+// find review with sort
       const cursor = reviewCollections.find(
         { "author.uid": uid },
-        { sort: { time: -1 } }
+        { sort: { time: -1 } } 
       );
       const reviews = await cursor.toArray();
       res.json(reviews);
